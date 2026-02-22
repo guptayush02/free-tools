@@ -212,7 +212,7 @@ export default function Playground({ initialSnippetId, user }) {
             value={code}
             theme="vs-dark"
             onChange={(val) => setCode(val || '')}
-            options={{ wordWrap: 'on', minimap: { enabled: false } }}
+            options={{ wordWrap: 'on', minimap: { enabled: false }, scrollBeyondLastLine: false }}
           />
         </div>
         <div className="output-column">

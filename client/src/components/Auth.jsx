@@ -51,7 +51,7 @@ export default function Auth({ onAuthSuccess }) {
     <div className="auth-container">
       <div className="auth-box">
         <div className="auth-header">
-          <img src="assets/images/logo.jpeg" alt="Free Tools Logo" style={{height: 90, width: 90}} />
+          <img src="assets/images/logo.jpeg" alt="Free Tools Logo" style={{height: 90, width: 90, maxWidth: '25vw', maxHeight: '25vw'}} />
           <h1>Free Tools</h1>
           <p>{isLogin ? 'Welcome Back!' : 'Join Our Community'}</p>
         </div>

@@ -8,12 +8,50 @@ import SnippetLibrary from './components/SnippetLibrary'
 import MindGames from './components/MindGames'
 import Auth from './components/Auth'
 import JSONFormatter from './components/JSONFormatter'
+import WordCounter from './components/WordCounter'
+import Base64Tool from './components/Base64Tool'
+import UrlEncoder from './components/UrlEncoder'
+import LoremIpsum from './components/LoremIpsum'
+import ColorPicker from './components/ColorPicker'
+import MarkdownPreview from './components/MarkdownPreview'
+import RegexTester from './components/RegexTester'
+import GradientGenerator from './components/GradientGenerator'
+import DiffChecker from './components/DiffChecker'
+import QRCodeGenerator from './components/QRCodeGenerator'
+import ImageCompressor from './components/ImageCompressor'
+import PasswordGenerator from './components/PasswordGenerator'
+import UnitConverter from './components/UnitConverter'
+import PomodoroTimer from './components/PomodoroTimer'
+import CsvJsonConverter from './components/CsvJsonConverter'
 import StoryBuilder from './components/StoryBuilder'
 import Leaderboard from './components/Leaderboard'
-// import Leaderboard from './components/Leaderboard'
 import './App.css'
 
 const API_URL = '/api'
+
+const TOOLS = [
+  { id: 'ats', label: 'ATS Optimizer' },
+  { id: 'playground', label: 'Code Playground' },
+  { id: 'library', label: 'Snippet Library' },
+  { id: 'json', label: 'JSON Formatter' },
+  { id: 'wordcounter', label: 'Word Counter' },
+  { id: 'base64', label: 'Base64 Tool' },
+  { id: 'url', label: 'URL Encoder' },
+  { id: 'lorem', label: 'Lorem Ipsum' },
+  { id: 'color', label: 'Color Picker' },
+  { id: 'markdown', label: 'Markdown Preview' },
+  { id: 'regex', label: 'Regex Tester' },
+  { id: 'gradient', label: 'Gradient Generator' },
+  { id: 'diff', label: 'Diff Checker' },
+  { id: 'qr', label: 'QR Code Generator' },
+  { id: 'image', label: 'Image Compressor' },
+  { id: 'password', label: 'Password Generator' },
+  { id: 'units', label: 'Unit Converter' },
+  { id: 'pomodoro', label: 'Pomodoro Timer' },
+  { id: 'csv', label: 'CSV/JSON Converter' },
+  { id: 'stories', label: 'Story Builder' },
+  { id: 'games', label: 'Mind Games' },
+]
 
 function App() {
   const [user, setUser] = useState(null)
@@ -26,7 +64,6 @@ function App() {
   const [activeTab, setActiveTab] = useState('ats')
 
   useEffect(() => {
-    // Check if user is logged in
     const token = localStorage.getItem('token')
     const userData = localStorage.getItem('user')
     if (token && userData) {
@@ -49,7 +86,6 @@ function App() {
   }
 
   const handleUpload = async (file) => {
-    // Require login to upload resume
     if (!user) {
       setError('Please login to upload resumes')
       setShowAuth(true)
@@ -104,27 +140,26 @@ function App() {
     return <div className="loading-screen">Loading...</div>
   }
 
-  // Removed early return so header and public components are visible to unauthenticated users.
-
   return (
     <div className="app-container">
       <header className="header">
         <div className="brand">
-          {/* <div className="logo" /> */}
           <img src="assets/images/logo.jpeg" alt="Free Tools Logo" style={{height: 40, width: 40}} />
           <div>
             <h1>Free Tools</h1>
-            <div className="subtitle">Resume, Playground & Stories</div>
+            <div className="subtitle">Developer & Productivity Tools</div>
           </div>
         </div>
         <nav className="top-tabs">
-          <button className={`tab-btn ${activeTab === 'ats' ? 'active' : ''}`} onClick={() => setActiveTab('ats')}>ATS Optimizer</button>
-          <button className={`tab-btn ${activeTab === 'playground' ? 'active' : ''}`} onClick={() => setActiveTab('playground')}>Code Playground</button>
-          <button className={`tab-btn ${activeTab === 'library' ? 'active' : ''}`} onClick={() => setActiveTab('library')}>Snippet Library</button>
-          <button className={`tab-btn ${activeTab === 'json' ? 'active' : ''}`} onClick={() => setActiveTab('json')}>JSON Formatter</button>
-          <button className={`tab-btn ${activeTab === 'stories' ? 'active' : ''}`} onClick={() => setActiveTab('stories')}>Story Builder</button>
-          <button className={`tab-btn ${activeTab === 'games' ? 'active' : ''}`} onClick={() => setActiveTab('games')}>Mind Games</button>
-          {/* <button className={`tab-btn ${activeTab === 'leaderboard' ? 'active' : ''}`} onClick={() => setActiveTab('leaderboard')}>{user.username}</button> */}
+          {TOOLS.map(tool => (
+            <button
+              key={tool.id}
+              className={`tab-btn ${activeTab === tool.id ? 'active' : ''}`}
+              onClick={() => setActiveTab(tool.id)}
+            >
+              {tool.label}
+            </button>
+          ))}
         </nav>
         <div className="user-info">
           {user ? (
@@ -151,8 +186,8 @@ function App() {
             {!resumeData ? (
               <ResumeUpload onUpload={handleUpload} loading={appLoading} error={error} />
             ) : (
-              <ResultsDisplay 
-                data={resumeData} 
+              <ResultsDisplay
+                data={resumeData}
                 onOptimize={handleOptimize}
                 loading={appLoading}
                 error={error}
@@ -161,35 +196,26 @@ function App() {
           </div>
         )}
 
-        {activeTab === 'playground' && (
-          <div>
-            <Playground initialSnippetId={selectedSnippetId} user={user} />
-          </div>
-        )}
-
-        {activeTab === 'json' && (
-          <div>
-            <JSONFormatter />
-          </div>
-        )}
-
-        {activeTab === 'stories' && (
-          <div>
-            <StoryBuilder user={user} />
-          </div>
-        )}
-
-        {activeTab === 'games' && (
-          <div>
-            <MindGames user={user} />
-          </div>
-        )}
-
-        {activeTab === 'leaderboard' && (
-          <div>
-            <Leaderboard user={user} />
-          </div>
-        )}
+        {activeTab === 'playground' && <Playground initialSnippetId={selectedSnippetId} user={user} />}
+        {activeTab === 'json' && <JSONFormatter />}
+        {activeTab === 'wordcounter' && <WordCounter />}
+        {activeTab === 'base64' && <Base64Tool />}
+        {activeTab === 'url' && <UrlEncoder />}
+        {activeTab === 'lorem' && <LoremIpsum />}
+        {activeTab === 'color' && <ColorPicker />}
+        {activeTab === 'markdown' && <MarkdownPreview />}
+        {activeTab === 'regex' && <RegexTester />}
+        {activeTab === 'gradient' && <GradientGenerator />}
+        {activeTab === 'diff' && <DiffChecker />}
+        {activeTab === 'qr' && <QRCodeGenerator />}
+        {activeTab === 'image' && <ImageCompressor />}
+        {activeTab === 'password' && <PasswordGenerator />}
+        {activeTab === 'units' && <UnitConverter />}
+        {activeTab === 'pomodoro' && <PomodoroTimer />}
+        {activeTab === 'csv' && <CsvJsonConverter />}
+        {activeTab === 'stories' && <StoryBuilder user={user} />}
+        {activeTab === 'games' && <MindGames user={user} />}
+        {activeTab === 'leaderboard' && <Leaderboard user={user} />}
 
         {activeTab === 'library' && (
           <div>

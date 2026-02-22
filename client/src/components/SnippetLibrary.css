@@ -2,7 +2,20 @@
  .snippet-library h3 { margin-top: 0 }
  .snippet-library ul { list-style:none; padding:0; margin:0 }
  .snippet-library li { padding:10px 0; border-bottom:1px solid #eee }
- .snippet-library .row { display:flex; justify-content:space-between; align-items:center }
- .snippet-library .meta { display:flex; flex-direction:column }
+ .snippet-library .row { display:flex; justify-content:space-between; align-items:center; gap: 10px; }
+ .snippet-library .meta { display:flex; flex-direction:column; min-width: 0; }
+ .snippet-library .meta strong { word-break: break-word; }
  .snippet-library .date { font-size:12px; color:#666 }
- .snippet-library button { padding:6px 10px; border-radius:6px; border:1px solid #ddd; background:#f7f7f7; cursor:pointer }
+ .snippet-library button { padding:8px 14px; border-radius:6px; border:1px solid #ddd; background:#f7f7f7; cursor:pointer; min-height: 36px; }
+
+@media (max-width: 768px) {
+  .snippet-library { padding: 14px; }
+  .snippet-library li { padding: 8px 0; }
+  .snippet-library button { padding: 8px 12px; font-size: 13px; }
+}
+
+@media (max-width: 480px) {
+  .snippet-library { padding: 10px; }
+  .snippet-library .row { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .snippet-library button { width: 100%; text-align: center; }
+}

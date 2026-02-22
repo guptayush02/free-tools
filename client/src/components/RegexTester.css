@@ -1,0 +1,624 @@
+/* ===== Container ===== */
+.regex-container {
+  padding: 20px;
+  background: linear-gradient(135deg, #f5576c 0%, #ff6f91 100%);
+  border-radius: 10px;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: white;
+}
+
+/* ===== Header ===== */
+.regex-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.regex-header h2 {
+  font-size: 32px;
+  margin: 0 0 8px 0;
+  font-weight: bold;
+}
+
+.regex-header p {
+  font-size: 14px;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* ===== Quick Examples ===== */
+.regex-examples {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 20px;
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  margin-bottom: 24px;
+}
+
+.regex-examples h3 {
+  margin: 0 0 14px 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.regex-examples-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.regex-example-card {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s;
+}
+
+.regex-example-card button {
+  width: 100%;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s;
+}
+
+.regex-example-card:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.regex-example-card button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ===== Main Grid ===== */
+.regex-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* ===== Panels (shared) ===== */
+.regex-input-panel,
+.regex-results-panel {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.regex-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  border-bottom: 2px solid #f5576c;
+  padding-bottom: 10px;
+}
+
+.regex-panel-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 16px;
+}
+
+/* ===== Clear Button ===== */
+.regex-action-btn {
+  background: #f5576c;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.regex-action-btn:hover {
+  background: #e0455a;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(245, 87, 108, 0.4);
+}
+
+/* ===== Pattern Input Row ===== */
+.regex-pattern-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: #fafafa;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0 12px;
+  transition: border-color 0.3s;
+  margin-bottom: 14px;
+}
+
+.regex-pattern-row:focus-within {
+  border-color: #f5576c;
+  background: white;
+}
+
+.regex-delimiter {
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f5576c;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.regex-pattern-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 12px 8px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 15px;
+  color: #333;
+  outline: none;
+  min-width: 0;
+}
+
+.regex-pattern-input::placeholder {
+  color: #aaa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ===== Flags ===== */
+.regex-flags {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.regex-flag-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 6px 10px;
+  background: #f5f5f5;
+  border-radius: 6px;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+.regex-flag-label:hover {
+  background: #ede0e3;
+}
+
+.regex-flag-label input[type="checkbox"] {
+  accent-color: #f5576c;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.regex-flag-name {
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 14px;
+  color: #f5576c;
+}
+
+.regex-flag-desc {
+  font-size: 12px;
+  color: #777;
+}
+
+/* ===== Error ===== */
+.regex-error {
+  color: #c0392b;
+  background: #fdecea;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  border-left: 4px solid #e74c3c;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* ===== Test String Textarea ===== */
+.regex-textarea {
+  width: 100%;
+  height: 260px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 12px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 15px;
+  resize: vertical;
+  color: #333;
+  background-color: #fafafa;
+  transition: border-color 0.3s;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+.regex-textarea:focus {
+  outline: none;
+  border-color: #f5576c;
+  background-color: white;
+}
+
+/* ===== Results Panel ===== */
+.regex-summary-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.regex-status {
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 180px;
+}
+
+.regex-status.idle {
+  background: #f0f0f0;
+  color: #888;
+}
+
+.regex-status.match {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-left: 4px solid #4caf50;
+}
+
+.regex-status.no-match {
+  background: #fff3e0;
+  color: #e65100;
+  border-left: 4px solid #ff9800;
+}
+
+.regex-match-count {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(245, 87, 108, 0.08);
+  padding: 8px 18px;
+  border-radius: 8px;
+}
+
+.regex-count-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: #f5576c;
+  line-height: 1;
+}
+
+.regex-count-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #999;
+  font-weight: 600;
+}
+
+/* ===== Highlighted Section ===== */
+.regex-highlighted-section {
+  margin-bottom: 18px;
+}
+
+.regex-highlighted-section h4 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.regex-highlighted-text {
+  background: #fafafa;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 14px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 15px;
+  line-height: 1.8;
+  color: #333;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.regex-highlight {
+  background: linear-gradient(135deg, #fff176, #aed581);
+  color: #333;
+  padding: 1px 3px;
+  border-radius: 3px;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* ===== Match List ===== */
+.regex-match-list-section h4 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.regex-match-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.regex-match-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  transition: background 0.2s;
+  border-left: 3px solid #f5576c;
+}
+
+.regex-match-item:hover {
+  background: #fce4ec;
+}
+
+.regex-match-index {
+  font-size: 12px;
+  font-weight: 700;
+  color: #999;
+  width: 28px;
+  flex-shrink: 0;
+}
+
+.regex-match-value {
+  flex: 1;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.regex-match-position {
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  background: #f5576c;
+  padding: 3px 10px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ===== No Matches Message ===== */
+.regex-no-matches {
+  background: #fff8e1;
+  color: #795548;
+  padding: 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  border-left: 4px solid #ffb300;
+  text-align: center;
+}
+
+/* ===== Responsive: 900px ===== */
+@media (max-width: 900px) {
+  .regex-main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .regex-textarea {
+    height: 200px;
+  }
+
+  .regex-highlighted-text {
+    max-height: 160px;
+  }
+
+  .regex-match-list {
+    max-height: 200px;
+  }
+}
+
+/* ===== Responsive: 600px ===== */
+@media (max-width: 600px) {
+  .regex-container {
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .regex-header h2 {
+    font-size: 22px;
+  }
+
+  .regex-header p {
+    font-size: 13px;
+  }
+
+  .regex-examples {
+    padding: 14px;
+  }
+
+  .regex-examples h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .regex-examples-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .regex-example-card button {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .regex-input-panel,
+  .regex-results-panel {
+    padding: 14px;
+  }
+
+  .regex-pattern-input {
+    font-size: 14px;
+  }
+
+  .regex-flags {
+    gap: 8px;
+  }
+
+  .regex-flag-label {
+    padding: 5px 8px;
+  }
+
+  .regex-flag-desc {
+    font-size: 11px;
+  }
+
+  .regex-textarea {
+    height: 180px;
+    font-size: 14px;
+  }
+
+  .regex-highlighted-text {
+    font-size: 14px;
+    padding: 10px;
+    max-height: 140px;
+  }
+
+  .regex-match-item {
+    padding: 8px 10px;
+  }
+
+  .regex-match-value {
+    font-size: 12px;
+  }
+
+  .regex-match-position {
+    font-size: 11px;
+    padding: 2px 8px;
+  }
+}
+
+/* ===== Responsive: 480px ===== */
+@media (max-width: 480px) {
+  .regex-container {
+    padding: 8px;
+  }
+
+  .regex-header h2 {
+    font-size: 20px;
+  }
+
+  .regex-examples-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .regex-example-card button {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .regex-input-panel,
+  .regex-results-panel {
+    padding: 10px;
+  }
+
+  .regex-pattern-row {
+    padding: 0 8px;
+  }
+
+  .regex-delimiter {
+    font-size: 14px;
+  }
+
+  .regex-pattern-input {
+    font-size: 13px;
+    padding: 10px 6px;
+  }
+
+  .regex-flags {
+    gap: 6px;
+  }
+
+  .regex-flag-label {
+    padding: 4px 6px;
+    font-size: 12px;
+  }
+
+  .regex-flag-name {
+    font-size: 13px;
+  }
+
+  .regex-flag-desc {
+    display: none;
+  }
+
+  .regex-textarea {
+    height: 150px;
+    font-size: 16px;
+  }
+
+  .regex-summary-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .regex-status {
+    min-width: auto;
+    width: 100%;
+    text-align: center;
+  }
+
+  .regex-match-count {
+    flex-direction: row;
+    gap: 6px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .regex-count-number {
+    font-size: 22px;
+  }
+
+  .regex-highlighted-text {
+    font-size: 13px;
+    padding: 8px;
+    max-height: 120px;
+  }
+
+  .regex-match-list {
+    max-height: 180px;
+  }
+
+  .regex-match-item {
+    padding: 6px 8px;
+    gap: 6px;
+  }
+
+  .regex-match-value {
+    font-size: 11px;
+  }
+
+  .regex-match-position {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+}

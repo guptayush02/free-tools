@@ -54,3 +54,56 @@
   .playground-grid { flex-direction: column; }
   .output-column { height: 400px; }
 }
+
+@media (max-width: 768px) {
+  .playground-page { padding: 8px; }
+
+  .playground-grid { flex-direction: column; gap: 10px; }
+
+  .header-row {
+    flex-wrap: wrap;
+  }
+
+  .title-input {
+    min-width: 0;
+    font-size: 14px;
+  }
+
+  .buttons {
+    flex-wrap: wrap;
+  }
+
+  .output-column { height: 300px; }
+
+  .copy-btn {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .output-text { font-size: 12px; }
+}
+
+@media (max-width: 480px) {
+  .playground-page { padding: 6px; }
+
+  .header-row {
+    gap: 6px;
+  }
+
+  .title-input {
+    width: 100%;
+    flex: unset;
+  }
+
+  .language-select {
+    font-size: 13px;
+    padding: 7px 8px;
+  }
+
+  .btn {
+    padding: 7px 10px;
+    font-size: 13px;
+  }
+
+  .output-column { height: 250px; }
+}
