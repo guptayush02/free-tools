@@ -20,7 +20,7 @@ app.use(cors({
       'http://127.0.0.1:3001',
       'http://127.0.0.1:3002',
       'http://127.0.0.1:5173',
-      'https://free-tools-xm13.onrender.com/'
+      'https://free-tools-xm13.onrender.com'
     ];
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
