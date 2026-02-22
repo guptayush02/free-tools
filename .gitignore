@@ -1,0 +1,10 @@
+node_modules/
+.env
+.DS_Store
+*.log
+# server/public/
+client/dist/
+.vscode/
+server/assets/
+server/node_modules/
+server/.env

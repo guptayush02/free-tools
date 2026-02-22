@@ -1,0 +1,90 @@
+/* Layout */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.header {
+  color: white;
+  padding: 18px 20px;
+  background: rgba(0, 0, 0, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  backdrop-filter: blur(6px);
+}
+
+.brand { display:flex; align-items:center; gap:12px }
+.logo { width:42px; height:42px; background:rgba(255,255,255,0.12); border-radius:8px }
+.brand h1 { margin:0; font-size:1.1rem; color: #fff }
+.brand .subtitle { font-size:12px; color:rgba(255,255,255,0.85) }
+
+.top-tabs { display:flex; gap:8px; align-items:center; flex: 1; justify-content:flex-start; overflow-x: auto }
+.tab-btn { background: rgba(255,255,255,0.06); color: white; border: none; padding: 8px 14px; border-radius: 999px; cursor: pointer; font-weight:600; white-space:nowrap; transition: all 0.3s }
+.tab-btn:hover { background: rgba(255,255,255,0.2) }
+.tab-btn.active { background: white; color: #333; box-shadow: 0 2px 6px rgba(0,0,0,0.12) }
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.username {
+  font-weight: 600;
+  color: white;
+  padding: 0 12px;
+}
+
+.logout-btn {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.logout-btn:hover {
+  background: rgba(255,255,255,0.3);
+  transform: translateY(-2px);
+}
+
+.loading-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 20px;
+}
+
+.main-content { flex: 1; max-width: 1100px; margin: 28px auto; width: 100%; padding: 0 20px; }
+.ats-header { background: rgba(255,255,255,0.95); padding:18px; border-radius:8px; margin-bottom:18px }
+.ats-header h2 { margin:0 }
+.ats-header p { margin:6px 0 0; color:#444 }
+
+.footer {
+  text-align: center;
+  padding: 14px;
+  color: white;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+/* Ensure footer stays at bottom */
+.footer { margin-top: auto }
+
+/* Auth modal overlay should appear above footer */
+.auth-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000 }
+
+@media (max-width: 768px) {
+  .header { flex-direction: column; align-items: flex-start }
+  .tab-btn { padding: 8px 10px }
+  .main-content { margin: 18px auto }
+}
