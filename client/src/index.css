@@ -27,3 +27,22 @@ button {
 input[type="file"] {
   cursor: pointer;
 }
+
+/* Prevent horizontal overflow on mobile */
+html, body {
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  button {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  button {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+}

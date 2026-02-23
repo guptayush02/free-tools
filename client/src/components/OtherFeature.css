@@ -1,2 +1,7 @@
 .other-feature { padding: 12px }
 .ads-top { background: #f7f7f7; padding: 8px; text-align: center; color: #666; margin-bottom: 12px }
+
+@media (max-width: 480px) {
+  .other-feature { padding: 8px; }
+  .ads-top { font-size: 0.85rem; padding: 6px; }
+}

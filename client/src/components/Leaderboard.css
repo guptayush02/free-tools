@@ -1,6 +1,25 @@
 .leaderboard { padding: 16px; }
+.leaderboard h3 { margin-top: 0; }
 .leader-row { display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid #eee; }
-.rank { width:40px; font-weight:700 }
-.meta { flex:1 }
-.score { font-weight:700 }
+.rank { width:40px; font-weight:700; flex-shrink: 0; }
+.meta { flex:1; min-width: 0; }
+.meta strong { word-break: break-word; }
+.score { font-weight:700; flex-shrink: 0; }
 .sub { color:#666; font-size:0.9rem }
+
+@media (max-width: 768px) {
+  .leaderboard { padding: 12px; }
+  .leader-row { gap: 8px; padding: 6px 0; }
+  .rank { width: 32px; font-size: 0.9rem; }
+  .score { font-size: 0.9rem; }
+  .sub { font-size: 0.8rem; }
+}
+
+@media (max-width: 480px) {
+  .leaderboard { padding: 8px; }
+  .leader-row { gap: 6px; }
+  .rank { width: 28px; font-size: 0.85rem; }
+  .meta { font-size: 0.85rem; }
+  .score { font-size: 0.85rem; }
+  .sub { font-size: 0.75rem; }
+}

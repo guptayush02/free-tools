@@ -1,0 +1,480 @@
+/* =============================================
+   Unit Converter - Styles
+   ============================================= */
+
+.uc-container {
+  padding: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: white;
+}
+
+/* ---------- Header ---------- */
+
+.uc-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.uc-header h2 {
+  font-size: 32px;
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.uc-header p {
+  font-size: 14px;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* ---------- Category Tabs ---------- */
+
+.uc-categories {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.uc-cat-btn {
+  padding: 9px 20px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(4px);
+}
+
+.uc-cat-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.7);
+  transform: translateY(-1px);
+}
+
+.uc-cat-active {
+  background: white;
+  color: #764ba2;
+  border-color: white;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+.uc-cat-active:hover {
+  background: white;
+  border-color: white;
+  transform: translateY(-1px);
+}
+
+/* ---------- Converter Panel ---------- */
+
+.uc-converter-panel {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  margin-bottom: 24px;
+}
+
+.uc-conversion-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.uc-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.uc-label {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #764ba2;
+}
+
+.uc-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+  background: #fafafa;
+  transition: border-color 0.3s, background-color 0.3s;
+  box-sizing: border-box;
+}
+
+.uc-input:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+}
+
+.uc-input-result {
+  background: #f0edf6;
+  color: #764ba2;
+  cursor: default;
+}
+
+.uc-input-result:focus {
+  border-color: #e0e0e0;
+  background: #f0edf6;
+}
+
+.uc-select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+  appearance: auto;
+}
+
+.uc-select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* ---------- Swap Button ---------- */
+
+.uc-swap-btn {
+  align-self: center;
+  margin-top: 22px;
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.35s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 14px rgba(102, 126, 234, 0.35);
+}
+
+.uc-swap-btn:hover {
+  transform: rotate(180deg) scale(1.08);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.uc-swap-icon {
+  pointer-events: none;
+}
+
+/* ---------- Formula ---------- */
+
+.uc-formula {
+  margin-top: 18px;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+  border-left: 4px solid #667eea;
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.uc-formula-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #764ba2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.uc-formula-text {
+  font-size: 15px;
+  color: #444;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-weight: 500;
+}
+
+/* ---------- Quick Reference Panel ---------- */
+
+.uc-reference-panel {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 24px 28px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.uc-reference-title {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 12px;
+}
+
+.uc-reference-table-wrapper {
+  overflow-x: auto;
+}
+
+.uc-reference-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.uc-reference-table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #764ba2;
+  border-bottom: 2px solid #eee;
+}
+
+.uc-reference-table td {
+  padding: 10px 14px;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.uc-reference-table tbody tr:hover {
+  background: rgba(102, 126, 234, 0.04);
+}
+
+.uc-ref-value {
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-weight: 600;
+  color: #444;
+}
+
+.uc-ref-highlight {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.uc-ref-highlight td {
+  color: #667eea;
+  font-weight: 600;
+}
+
+.uc-ref-highlight .uc-ref-value {
+  color: #667eea;
+}
+
+.uc-ref-source {
+  background: rgba(118, 75, 162, 0.06);
+}
+
+.uc-ref-source td {
+  font-weight: 600;
+  color: #764ba2;
+}
+
+.uc-ref-source .uc-ref-value {
+  color: #764ba2;
+}
+
+/* =============================================
+   Responsive Breakpoints
+   ============================================= */
+
+/* --- 900px --- */
+@media (max-width: 900px) {
+  .uc-conversion-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .uc-swap-btn {
+    align-self: center;
+    margin-top: 0;
+    transform: rotate(90deg);
+  }
+
+  .uc-swap-btn:hover {
+    transform: rotate(270deg) scale(1.08);
+  }
+
+  .uc-converter-panel {
+    padding: 22px;
+  }
+
+  .uc-reference-panel {
+    padding: 20px 22px;
+  }
+}
+
+/* --- 600px --- */
+@media (max-width: 600px) {
+  .uc-container {
+    padding: 14px;
+    border-radius: 8px;
+  }
+
+  .uc-header {
+    margin-bottom: 20px;
+  }
+
+  .uc-header h2 {
+    font-size: 24px;
+  }
+
+  .uc-header p {
+    font-size: 13px;
+  }
+
+  .uc-categories {
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .uc-cat-btn {
+    padding: 7px 14px;
+    font-size: 13px;
+  }
+
+  .uc-converter-panel {
+    padding: 16px;
+  }
+
+  .uc-input {
+    padding: 12px 14px;
+    font-size: 18px;
+  }
+
+  .uc-select {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .uc-swap-btn {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+  }
+
+  .uc-formula {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 10px 14px;
+  }
+
+  .uc-formula-text {
+    font-size: 13px;
+  }
+
+  .uc-reference-panel {
+    padding: 16px;
+  }
+
+  .uc-reference-title {
+    font-size: 16px;
+  }
+
+  .uc-reference-table {
+    font-size: 13px;
+  }
+
+  .uc-reference-table th,
+  .uc-reference-table td {
+    padding: 8px 10px;
+  }
+}
+
+/* --- 480px --- */
+@media (max-width: 480px) {
+  .uc-container {
+    padding: 10px;
+  }
+
+  .uc-header h2 {
+    font-size: 20px;
+  }
+
+  .uc-header p {
+    font-size: 12px;
+  }
+
+  .uc-categories {
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .uc-cat-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .uc-converter-panel {
+    padding: 12px;
+  }
+
+  .uc-input {
+    padding: 10px 12px;
+    font-size: 16px;
+  }
+
+  .uc-select {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .uc-swap-btn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+  }
+
+  .uc-swap-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .uc-formula {
+    padding: 8px 12px;
+  }
+
+  .uc-formula-label {
+    font-size: 11px;
+  }
+
+  .uc-formula-text {
+    font-size: 12px;
+  }
+
+  .uc-reference-panel {
+    padding: 12px;
+  }
+
+  .uc-reference-title {
+    font-size: 14px;
+    padding-bottom: 10px;
+  }
+
+  .uc-reference-table {
+    font-size: 12px;
+  }
+
+  .uc-reference-table th,
+  .uc-reference-table td {
+    padding: 7px 8px;
+  }
+}

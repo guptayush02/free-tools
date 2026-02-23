@@ -118,11 +118,38 @@
   .story-paragraph {
     font-size: 1.1rem;
     line-height: 1.7;
-    padding: 0 1rem;
+    padding: 0 0.5rem;
+    text-align: left;
   }
-  
+
   .full-story {
-    padding: 2rem 1.5rem;
+    padding: 1.5rem 1rem;
+    min-height: 250px;
+    border-radius: 16px;
+  }
+
+  .empty-story {
+    height: 200px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .story-paragraph {
+    font-size: 1rem;
+    line-height: 1.6;
+    padding: 0;
+  }
+
+  .full-story {
+    padding: 1.2rem 0.8rem;
+    min-height: 200px;
+    border-radius: 12px;
+  }
+
+  .story-sentence:hover::after,
+  .story-sentence:hover::before {
+    display: none; /* Tooltips interfere on touch screens */
   }
 }
 
@@ -485,17 +512,80 @@
   }
 
   .story-detail {
-    max-height: 600px;
+    max-height: none;
+  }
+
+  .story-title-section h2 {
+    font-size: 22px;
   }
 }
 
 @media (max-width: 600px) {
   .story-builder-container {
-    padding: 15px;
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .story-header {
+    margin-bottom: 20px;
   }
 
   .story-header h2 {
-    font-size: 24px;
+    font-size: 22px;
+  }
+
+  .story-header p {
+    font-size: 14px;
+  }
+
+  .create-story-btn {
+    padding: 10px 18px;
+    font-size: 14px;
+  }
+
+  .create-story-form {
+    padding: 14px;
+  }
+
+  .story-detail {
+    padding: 18px;
+    gap: 18px;
+  }
+
+  .stories-list {
+    padding: 14px;
+    max-height: 350px;
+  }
+
+  .story-card {
+    padding: 12px;
+  }
+
+  .story-card h4 { font-size: 14px; }
+
+  .story-title-section h2 {
+    font-size: 20px;
+  }
+
+  .story-description {
+    font-size: 13px;
+  }
+
+  .story-info {
+    gap: 12px;
+    font-size: 12px;
+  }
+
+  .lines-container {
+    padding: 12px;
+    max-height: 250px;
+  }
+
+  .line-item { gap: 10px; padding: 10px 0; }
+
+  .no-story-selected {
+    padding: 40px 15px;
+    font-size: 15px;
   }
 
   .form-footer {
@@ -504,5 +594,32 @@
 
   .add-line-btn {
     width: 100%;
+  }
+
+  .add-line-form textarea {
+    font-size: 16px; /* Prevents iOS zoom */
+  }
+}
+
+@media (max-width: 480px) {
+  .story-builder-container {
+    padding: 8px;
+  }
+
+  .story-header h2 {
+    font-size: 20px;
+  }
+
+  .story-detail {
+    padding: 14px;
+    gap: 14px;
+  }
+
+  .story-title-section h2 {
+    font-size: 18px;
+  }
+
+  .stories-list {
+    padding: 10px;
   }
 }
