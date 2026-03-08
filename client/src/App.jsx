@@ -26,6 +26,7 @@ import CsvJsonConverter from './components/CsvJsonConverter'
 import StoryBuilder from './components/StoryBuilder'
 import Leaderboard from './components/Leaderboard'
 import InvoiceTool from './components/InvoiceTool'
+import OfferLetterTool from './components/OfferLetterTool'
 import './App.css'
 
 const API_URL = '/api'
@@ -53,6 +54,7 @@ const TOOLS = [
   { id: 'stories', label: 'Story Builder' },
   { id: 'games', label: 'Mind Games' },
   { id: 'invoice', label: 'Invoice Tool' },
+  { id: 'offerletter', label: 'Offer Letter' },
 ]
 
 function App() {
@@ -219,6 +221,7 @@ function App() {
         {activeTab === 'games' && <MindGames user={user} />}
         {activeTab === 'leaderboard' && <Leaderboard user={user} />}
         {activeTab === 'invoice' && <InvoiceTool />}
+        {activeTab === 'offerletter' && <OfferLetterTool />}
 
         {activeTab === 'library' && (
           <div>
