@@ -58,21 +58,29 @@ export default function QRCodeGenerator() {
 
   /* Build the Google Charts QR URL */
   const buildQrUrl = (inputText, inputSize) => {
-    return `https://chart.googleapis.com/chart?cht=qr&chs=${inputSize}x${inputSize}&chl=${encodeURIComponent(inputText)}&choe=UTF-8`
+    // return `https://chart.googleapis.com/chart?cht=qr&chs=${inputSize}x${inputSize}&chl=${encodeURIComponent(inputText)}&choe=UTF-8`
+    return `https://api.qrserver.com/v1/create-qr-code/?size=${inputSize}x${inputSize}&data=${encodeURIComponent(inputText)}`
   }
 
   /* Generate QR code */
   const handleGenerate = () => {
-    setError('')
-    if (!text.trim()) {
-      setError('Please enter text or a URL to generate a QR code.')
+    try {
+      setError('')
+      if (!text.trim()) {
+        setError('Please enter text or a URL to generate a QR code.')
+        setGenerated(false)
+        setQrUrl('')
+        return
+      }
+      const url = buildQrUrl(text.trim(), size)
+      setQrUrl(url)
+      setGenerated(true)
+    } catch (e) {
+      console.error('QR generation error:', e)
+      setError('Failed to generate QR code. Please try again.')
       setGenerated(false)
       setQrUrl('')
-      return
     }
-    const url = buildQrUrl(text.trim(), size)
-    setQrUrl(url)
-    setGenerated(true)
   }
 
   /* Re-generate when size changes (if already generated) */
