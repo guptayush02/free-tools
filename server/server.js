@@ -51,6 +51,8 @@
 // app.use('/api/stories', require('./routes/storyRoutes'));
 // app.use('/api/leaderboard', require('./routes/leaderboardRoutes'));
 // app.use('/api/games', require('./routes/gamesRoutes'));
+// app.use('/api/invoices', require('./routes/invoiceRoutes'));
+// Company search API
 
 // // Serve static files from server/public (where client `dist` will be copied)
 // const publicPath = path.join(__dirname, 'public')
@@ -124,6 +126,8 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/stories', require('./routes/storyRoutes'));
 app.use('/api/leaderboard', require('./routes/leaderboardRoutes'));
 app.use('/api/games', require('./routes/gamesRoutes'));
+app.use('/api/invoices', require('./routes/invoiceRoutes'));
+app.use('/api/companies', require('./routes/companyRoutes'));
 
 // ✅ 5. SPA Fallback (catches all non-API routes)
 app.get('*', (req, res) => {

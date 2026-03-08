@@ -25,6 +25,7 @@ import PomodoroTimer from './components/PomodoroTimer'
 import CsvJsonConverter from './components/CsvJsonConverter'
 import StoryBuilder from './components/StoryBuilder'
 import Leaderboard from './components/Leaderboard'
+import InvoiceTool from './components/InvoiceTool'
 import './App.css'
 
 const API_URL = '/api'
@@ -51,6 +52,7 @@ const TOOLS = [
   { id: 'csv', label: 'CSV/JSON Converter' },
   { id: 'stories', label: 'Story Builder' },
   { id: 'games', label: 'Mind Games' },
+  { id: 'invoice', label: 'Invoice Tool' },
 ]
 
 function App() {
@@ -216,6 +218,7 @@ function App() {
         {activeTab === 'stories' && <StoryBuilder user={user} />}
         {activeTab === 'games' && <MindGames user={user} />}
         {activeTab === 'leaderboard' && <Leaderboard user={user} />}
+        {activeTab === 'invoice' && <InvoiceTool />}
 
         {activeTab === 'library' && (
           <div>

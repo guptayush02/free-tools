@@ -1,0 +1,392 @@
+import React, { useState, useEffect } from 'react';
+import './InvoiceTool.css';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import InvoiceList from './InvoiceList';
+import InvoicePreview from './InvoicePreview';
+import CompanyAutocomplete from './CompanyAutocomplete';
+
+const InvoiceTool = () => {
+  const [view, setView] = useState('create'); // 'create' or 'list'
+  const [invoice, setInvoice] = useState({
+    payer: { name: '', address: '', email: '', companyId: '' },
+    payee: { name: '', address: '', email: '', companyId: '' },
+    items: [{ description: '', quantity: 1, price: 0 }],
+    date: new Date().toISOString().split('T')[0],
+    total: 0,
+    currency: 'USD'
+  });
+  // Prefill state for repeat invoice
+  const [prefill, setPrefill] = useState({ payer: null, payee: null });
+  const [status, setStatus] = useState('');
+  const [showPreview, setShowPreview] = useState(false); // ✅ NEW: Preview state
+  const [previewInvoice, setPreviewInvoice] = useState(null); // ✅ NEW: Preview data
+
+  const handleChange = (e, section = null) => {
+    if (section) {
+      setInvoice({ ...invoice, [section]: { ...invoice[section], [e.target.name]: e.target.value } });
+    } else {
+      setInvoice({ ...invoice, [e.target.name]: e.target.value });
+    }
+  };
+
+  // Handle autocomplete selection
+  const handleCompanySelect = (company, section) => {
+    setInvoice({ ...invoice, [section]: {
+      name: company.name,
+      address: company.address || '',
+      email: company.email || '',
+      companyId: company.companyId || ''
+    }});
+  };
+
+  // Reset form
+  const handleReset = () => {
+    setInvoice({
+      payer: { name: '', address: '', email: '', companyId: '' },
+      payee: { name: '', address: '', email: '', companyId: '' },
+      items: [{ description: '', quantity: 1, price: 0 }],
+      date: new Date().toISOString().split('T')[0],
+      total: 0,
+      currency: 'USD'
+    });
+    setStatus('');
+    setPrefill({ payer: null, payee: null });
+  };
+
+  // Prefill for repeat invoice
+  const handlePrefill = (type) => {
+    if (prefill[type]) {
+      setInvoice({ ...invoice, [type]: { ...prefill[type] } });
+    }
+  };
+
+  const handleItemChange = (idx, e) => {
+    const value = e.target.value;
+    const fieldName = e.target.name;
+    
+    const items = invoice.items.map((item, i) => {
+      if (i === idx) {
+        if (fieldName === 'description') {
+          return { ...item, [fieldName]: value };
+        } else {
+          return { ...item, [fieldName]: parseFloat(value) || 0 };
+        }
+      }
+      return item;
+    });
+    setInvoice({ ...invoice, items });
+  };
+
+  const addItem = () => {
+    setInvoice({ ...invoice, items: [...invoice.items, { description: '', quantity: 1, price: 0 }] });
+  };
+
+  const removeItem = (idx) => {
+    if (invoice.items.length > 1) {
+      setInvoice({ ...invoice, items: invoice.items.filter((_, i) => i !== idx) });
+    }
+  };
+
+  const calculateTotal = () => {
+    return invoice.items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+  };
+
+  // Auto-calculate total when items change
+  useEffect(() => {
+    setInvoice(prev => ({ ...prev, total: calculateTotal() }));
+  }, [invoice.items]);
+
+  const getCurrencySymbol = (currency) => {
+    const symbols = {
+      'USD': '$', 'EUR': '€', 'GBP': '£', 'INR': '₹', 
+      'JPY': '¥', 'AUD': 'A$', 'CAD': 'C$', 'CHF': 'Fr', 
+      'CNY': '¥', 'SGD': 'S$'
+    };
+    return symbols[currency] || '$';
+  };
+
+  // ✅ NEW: Handle Preview (before saving)
+  const handlePreview = () => {
+    const total = calculateTotal();
+    const previewData = { ...invoice, total };
+    setPreviewInvoice(previewData);
+    setShowPreview(true);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const total = calculateTotal();
+    try {
+      const res = await fetch('/api/invoices', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${localStorage.getItem('token')}` 
+        },
+        body: JSON.stringify({ ...invoice, total })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setStatus('✅ Invoice saved successfully!');
+        setPreviewInvoice(data.invoice); // Show saved invoice in preview
+        setShowPreview(true); // Auto-open preview after save
+      } else {
+        setStatus(`❌ ${data.error || 'Error saving invoice'}`);
+      }
+    } catch {
+      setStatus('❌ Network error. Please try again.');
+    }
+  };
+
+  if (view === 'list') {
+    return (
+      <div className="invoice-tool">
+        <div className="invoice-nav">
+          <button className="nav-btn nav-btn-secondary" onClick={() => setView('create')}>
+            ← Create New Invoice
+          </button>
+        </div>
+        <InvoiceList />
+      </div>
+    );
+  }
+
+  return (
+    <div className="invoice-tool">
+      <div className="invoice-header">
+        <div className="header-content">
+          <h1 className="header-title">📄 Invoice Generator</h1>
+          <p className="header-subtitle">Create professional invoices in seconds</p>
+        </div>
+        <button className="nav-btn nav-btn-primary" onClick={() => setView('list')}>
+          📋 View All Invoices
+        </button>
+      </div>
+
+      <div className="invoice-container">
+        {/* Form Section */}
+        <div className="card form-card">
+          <form onSubmit={handleSubmit} className="invoice-form">
+            {/* Currency & Date Row */}
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">💰 Currency</label>
+                <select 
+                  name="currency" 
+                  value={invoice.currency} 
+                  onChange={handleChange}
+                  className="form-input"
+                  required
+                >
+                  <option value="USD">$ USD</option>
+                  <option value="EUR">€ EUR</option>
+                  <option value="GBP">£ GBP</option>
+                  <option value="INR">₹ INR</option>
+                  <option value="JPY">¥ JPY</option>
+                  <option value="AUD">A$ AUD</option>
+                  <option value="CAD">C$ CAD</option>
+                  <option value="CHF">Fr CHF</option>
+                  <option value="CNY">¥ CNY</option>
+                  <option value="SGD">S$ SGD</option>
+                </select>
+              </div>
+              
+              <div className="form-group">
+                <label className="form-label">📅 Date</label>
+                <input 
+                  name="date" 
+                  type="date" 
+                  value={invoice.date} 
+                  onChange={handleChange}
+                  className="form-input"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Company Sections */}
+            <div className="company-grid">
+              <div className="company-section">
+                <h3 className="section-title">🏢 From (Payee)</h3>
+                <CompanyAutocomplete
+                  value={invoice.payee}
+                  onSelect={handleCompanySelect}
+                  placeholder="Your Company Name *"
+                  section="payee"
+                />
+                <input 
+                  name="address" 
+                  placeholder="Your Address *" 
+                  value={invoice.payee.address} 
+                  onChange={e => handleChange(e, 'payee')}
+                  className="form-input"
+                  required 
+                />
+                <input 
+                  name="email" 
+                  type="email"
+                  placeholder="your@email.com *" 
+                  value={invoice.payee.email} 
+                  onChange={e => handleChange(e, 'payee')}
+                  className="form-input"
+                  required 
+                />
+                <input 
+                  name="companyId" 
+                  placeholder="Payee Company ID (optional)" 
+                  value={invoice.payee.companyId} 
+                  onChange={e => handleChange(e, 'payee')}
+                  className="form-input"
+                />
+                {prefill.payee && (
+                  <button type="button" className="prefill-btn" onClick={() => handlePrefill('payee')}>Prefill Payee</button>
+                )}
+              </div>
+
+              <div className="company-section">
+                <h3 className="section-title">👤 Bill To (Payer)</h3>
+                <CompanyAutocomplete
+                  value={invoice.payer}
+                  onSelect={handleCompanySelect}
+                  placeholder="Client Company Name *"
+                  section="payer"
+                />
+                <input 
+                  name="address" 
+                  placeholder="Client Address *" 
+                  value={invoice.payer.address} 
+                  onChange={e => handleChange(e, 'payer')}
+                  className="form-input"
+                  required 
+                />
+                <input 
+                    name="email" 
+                    type="email"
+                    placeholder="client@email.com" 
+                    value={invoice.payer.email} 
+                    onChange={e => handleChange(e, 'payer')}  // ← Fixed!
+                    className="form-input"
+                    required 
+                />
+                <input 
+                  name="companyId" 
+                  placeholder="Payer Company ID (optional)" 
+                  value={invoice.payer.companyId} 
+                  onChange={e => handleChange(e, 'payer')}
+                  className="form-input"
+                />
+                {prefill.payer && (
+                  <button type="button" className="prefill-btn" onClick={() => handlePrefill('payer')}>Prefill Payer</button>
+                )}
+              </div>
+            </div>
+
+            {/* Items Section */}
+            <div className="items-section">
+              <div className="items-header">
+                <h3 className="section-title">📦 Items</h3>
+                <button type="button" onClick={addItem} className="add-item-btn">
+                  + Add Item
+                </button>
+              </div>
+              
+              <div className="items-container">
+                {invoice.items.map((item, idx) => (
+                  <div key={idx} className="item-card">
+                    <div className="item-number">{idx + 1}</div>
+                    <div className="item-fields">
+                      <input 
+                        name="description" 
+                        placeholder="Item description *" 
+                        value={item.description} 
+                        onChange={e => handleItemChange(idx, e)}
+                        className="form-input item-description"
+                        required
+                      />
+                      <input 
+                        name="quantity" 
+                        type="number" 
+                        min="1" 
+                        placeholder="Qty"
+                        value={item.quantity} 
+                        onChange={e => handleItemChange(idx, e)}
+                        className="form-input item-quantity"
+                        required
+                      />
+                      <input 
+                        name="price" 
+                        type="number" 
+                        min="0" 
+                        step="0.01"
+                        placeholder="Price"
+                        value={item.price} 
+                        onChange={e => handleItemChange(idx, e)}
+                        className="form-input item-price"
+                        required
+                      />
+                      <div className="item-total">
+                        {getCurrencySymbol(invoice.currency)}{(item.quantity * item.price).toFixed(2)}
+                      </div>
+                    </div>
+                    {invoice.items.length > 1 && (
+                      <button 
+                        type="button" 
+                        onClick={() => removeItem(idx)}
+                        className="remove-item-btn"
+                        title="Remove item"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Total & Action Buttons */}
+            <div className="total-section">
+              <div className="total-label">Grand Total:</div>
+              <div className="total-amount">
+                {getCurrencySymbol(invoice.currency)}{invoice.total.toFixed(2)}
+              </div>
+            </div>
+
+            <div className="form-actions">
+              <button 
+                type="button" 
+                className="btn btn--secondary btn--lg" 
+                onClick={handleReset}
+              >
+                🔄 Reset Form
+              </button>
+              <button type="submit" className="btn btn--primary btn--lg">
+                💾 Save Invoice
+              </button>
+            </div>
+          </form>
+
+          {status && (
+            <div className={`status ${status.includes('✅') ? 'status-success' : 'status-error'}`}>
+              {status}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ✅ NEW: Unified Invoice Preview Modal */}
+      {showPreview && previewInvoice && (
+        <InvoicePreview
+          invoice={previewInvoice}
+          onClose={() => {
+            setShowPreview(false);
+            setPreviewInvoice(null);
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+export default InvoiceTool;
+
