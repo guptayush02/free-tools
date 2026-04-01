@@ -66,6 +66,21 @@ function App() {
   const [error, setError] = useState('')
   const [selectedSnippetId, setSelectedSnippetId] = useState(null)
   const [activeTab, setActiveTab] = useState('ats')
+  const [serverHealthChecked, setServerHealthChecked] = useState(false);
+
+  useEffect(() => {
+    // Waking up server
+    setServerHealthChecked(true);
+    axios.get(`${API_URL}/health`)
+      .then(() => {
+        console.log('Server is awake')
+        setServerHealthChecked(false);
+      })
+      .catch(() => {
+        console.log('Failed to wake up server')
+        setServerHealthChecked(false);
+      })
+  }, [])
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -146,6 +161,13 @@ function App() {
 
   return (
     <div className="app-container">
+      {
+        serverHealthChecked && (
+          <div className="server-health">
+            Checking server health...
+          </div>
+        )
+      }
       <header className="header">
         <div className="brand">
           <img src="assets/images/logo.jpeg" alt="Free Tools Logo" style={{height: 40, width: 40}} />
