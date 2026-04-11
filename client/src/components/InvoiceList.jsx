@@ -55,7 +55,7 @@ const InvoiceList = () => {
             </div>
             {invoices.map((inv) => (
               <div key={inv._id} className="invoice-list-row">
-                <span className="code-cell">{inv._id}</span>
+                <span className="code-cell">{inv.invoiceNumber || inv._id}</span>
                 <span>{new Date(inv.date).toLocaleDateString()}</span>
                 <span>{inv.payee?.name || '-'}</span>
                 <span>{inv.payer?.name || '-'}</span>

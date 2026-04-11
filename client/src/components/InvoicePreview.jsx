@@ -20,7 +20,7 @@ const InvoicePreview = ({ invoice, onClose, showCloseButton = true }) => {
     // Invoice details box
     doc.setFontSize(10);
     doc.setFont(undefined, 'normal');
-    doc.text(`Invoice #: ${invoice._id || 'DRAFT'}`, marginLeft, y);
+    doc.text(`Invoice #: ${invoice.invoiceNumber || invoice._id || 'DRAFT'}`, marginLeft, y);
     doc.text(`Date: ${new Date(invoice.date).toLocaleDateString()}`, pageWidth - marginRight - 50, y, { align: 'right' });
     y += 10;
 
@@ -181,6 +181,52 @@ const InvoicePreview = ({ invoice, onClose, showCloseButton = true }) => {
     const totalStr = formatHugeNumber(invoice.total, invoice.currency || '$');
     doc.text(totalStr, amountX, y, { align: 'right' });
 
+    // Bank details section
+    const hasBankDetails = invoice.bankDetails && (
+      invoice.bankDetails.accountName ||
+      invoice.bankDetails.accountNumber ||
+      invoice.bankDetails.bankName ||
+      invoice.bankDetails.bankAddress ||
+      invoice.bankDetails.ifscSwift
+    );
+
+    if (hasBankDetails) {
+      y += 18;
+      if (y > 260) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'bold');
+      doc.text('Bank Details:', marginLeft, y);
+      y += 6;
+      doc.setFont(undefined, 'normal');
+
+      if (invoice.bankDetails.accountName) {
+        doc.text(`Account Name: ${invoice.bankDetails.accountName}`, marginLeft, y);
+        y += 5;
+      }
+      if (invoice.bankDetails.accountNumber) {
+        doc.text(`Account Number: ${invoice.bankDetails.accountNumber}`, marginLeft, y);
+        y += 5;
+      }
+      if (invoice.bankDetails.bankName) {
+        doc.text(`Bank Name: ${invoice.bankDetails.bankName}`, marginLeft, y);
+        y += 5;
+      }
+      if (invoice.bankDetails.bankAddress) {
+        const bankAddressLines = doc.splitTextToSize(`Bank Address: ${invoice.bankDetails.bankAddress}`, tableWidth);
+        bankAddressLines.forEach(line => {
+          doc.text(line, marginLeft, y);
+          y += 5;
+        });
+      }
+      if (invoice.bankDetails.ifscSwift) {
+        doc.text(`IFSC / SWIFT: ${invoice.bankDetails.ifscSwift}`, marginLeft, y);
+        y += 5;
+      }
+    }
+
     // Notes section if present
     if (invoice.notes) {
       y += 18;
@@ -237,7 +283,7 @@ const InvoicePreview = ({ invoice, onClose, showCloseButton = true }) => {
           <div className="invoice-preview-title">
             <h3>Invoice Preview</h3>
             <span className="invoice-preview-subtitle">
-              {invoice._id ? `#${invoice._id.slice(-8)}` : 'Draft'}
+              {invoice.invoiceNumber || (invoice._id ? `#${invoice._id.slice(-8)}` : 'Draft')}
             </span>
           </div>
           {showCloseButton && (

@@ -2,13 +2,23 @@ const Invoice = require('../models/Invoice');
 
 exports.createInvoice = async (req, res) => {
   try {
-    const { payee, payer, items, date, total, currency } = req.body;
+    const { invoiceNumber, payee, payer, bankDetails, items, date, total, currency } = req.body;
     const userId = req.userId;
     if (!userId) {
       return res.status(401).json({ error: 'User not authenticated' });
     }
     // companyId is optional for both payee and payer
-    const invoice = new Invoice({ payee, payer, items, date, total, currency, userId });
+    const invoice = new Invoice({
+      invoiceNumber,
+      payee,
+      payer,
+      bankDetails,
+      items,
+      date,
+      total,
+      currency,
+      userId
+    });
     await invoice.save();
     res.status(201).json({ message: 'Invoice created', invoice });
   } catch (err) {

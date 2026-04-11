@@ -14,8 +14,20 @@ const CompanySchema = new mongoose.Schema({
 }, { _id: false });
 
 const InvoiceSchema = new mongoose.Schema({
+  invoiceNumber: {
+    type: String,
+    required: true,
+    trim: true
+  },
   payee: { type: CompanySchema, required: true },
   payer: { type: CompanySchema, required: true },
+  bankDetails: {
+    accountName: { type: String, required: false, default: '' },
+    accountNumber: { type: String, required: false, default: '' },
+    bankName: { type: String, required: false, default: '' },
+    bankAddress: { type: String, required: false, default: '' },
+    ifscSwift: { type: String, required: false, default: '' }
+  },
   items: [ItemSchema],
   date: { type: Date, required: true },
   total: { type: Number, required: true },

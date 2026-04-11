@@ -17,7 +17,8 @@ router.get('/search', authMiddleware, async (req, res) => {
           name: { $first: `$${type}.name` },
           address: { $first: `$${type}.address` },
           email: { $first: `$${type}.email` },
-          companyId: { $first: `$${type}.companyId` }
+          companyId: { $first: `$${type}.companyId` },
+          bankDetails: { $first: '$bankDetails' }
         }},
         { $limit: 10 }
       ]);
@@ -30,7 +31,8 @@ router.get('/search', authMiddleware, async (req, res) => {
           name: { $first: '$payee.name' },
           address: { $first: '$payee.address' },
           email: { $first: '$payee.email' },
-          companyId: { $first: '$payee.companyId' }
+          companyId: { $first: '$payee.companyId' },
+          bankDetails: { $first: '$bankDetails' }
         }},
         { $limit: 10 }
       ]);

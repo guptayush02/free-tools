@@ -9,8 +9,10 @@ import CompanyAutocomplete from './CompanyAutocomplete';
 const InvoiceTool = () => {
   const [view, setView] = useState('create'); // 'create' or 'list'
   const [invoice, setInvoice] = useState({
+    invoiceNumber: '',
     payer: { name: '', address: '', email: '', companyId: '' },
     payee: { name: '', address: '', email: '', companyId: '' },
+    bankDetails: { accountName: '', accountNumber: '', bankName: '', bankAddress: '', ifscSwift: '' },
     items: [{ description: '', quantity: 1, price: 0 }],
     date: new Date().toISOString().split('T')[0],
     total: 0,
@@ -32,19 +34,37 @@ const InvoiceTool = () => {
 
   // Handle autocomplete selection
   const handleCompanySelect = (company, section) => {
-    setInvoice({ ...invoice, [section]: {
-      name: company.name,
-      address: company.address || '',
-      email: company.email || '',
-      companyId: company.companyId || ''
-    }});
+    const updatedInvoice = {
+      ...invoice,
+      [section]: {
+        name: company.name,
+        address: company.address || '',
+        email: company.email || '',
+        companyId: company.companyId || ''
+      }
+    };
+
+    // If user selects an existing payee with stored bank details, prefill them
+    if (section === 'payee' && company.bankDetails) {
+      updatedInvoice.bankDetails = {
+        accountName: company.bankDetails.accountName || '',
+        accountNumber: company.bankDetails.accountNumber || '',
+        bankName: company.bankDetails.bankName || '',
+        bankAddress: company.bankDetails.bankAddress || '',
+        ifscSwift: company.bankDetails.ifscSwift || ''
+      };
+    }
+
+    setInvoice(updatedInvoice);
   };
 
   // Reset form
   const handleReset = () => {
     setInvoice({
+      invoiceNumber: '',
       payer: { name: '', address: '', email: '', companyId: '' },
       payee: { name: '', address: '', email: '', companyId: '' },
+      bankDetails: { accountName: '', accountNumber: '', bankName: '', bankAddress: '', ifscSwift: '' },
       items: [{ description: '', quantity: 1, price: 0 }],
       date: new Date().toISOString().split('T')[0],
       total: 0,
@@ -171,6 +191,19 @@ const InvoiceTool = () => {
             {/* Currency & Date Row */}
             <div className="form-row">
               <div className="form-group">
+                <label className="form-label">🧾 Invoice Number</label>
+                <input
+                  name="invoiceNumber"
+                  type="text"
+                  value={invoice.invoiceNumber}
+                  onChange={handleChange}
+                  className="form-input"
+                  placeholder="INV-1001"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
                 <label className="form-label">💰 Currency</label>
                 <select 
                   name="currency" 
@@ -202,6 +235,62 @@ const InvoiceTool = () => {
                   className="form-input"
                   required
                 />
+              </div>
+            </div>
+
+            {/* Bank Details */}
+            <div className="company-section">
+              <h3 className="section-title">🏦 Bank Account Details</h3>
+              <div className="form-row">
+                <div className="form-group">
+                  <input
+                    name="accountName"
+                    placeholder="Account Name"
+                    value={invoice.bankDetails.accountName}
+                    onChange={e => handleChange(e, 'bankDetails')}
+                    className="form-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <input
+                    name="accountNumber"
+                    placeholder="Account Number"
+                    value={invoice.bankDetails.accountNumber}
+                    onChange={e => handleChange(e, 'bankDetails')}
+                    className="form-input"
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <input
+                    name="bankName"
+                    placeholder="Bank Name"
+                    value={invoice.bankDetails.bankName}
+                    onChange={e => handleChange(e, 'bankDetails')}
+                    className="form-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <input
+                    name="bankAddress"
+                    placeholder="Bank Address"
+                    value={invoice.bankDetails.bankAddress}
+                    onChange={e => handleChange(e, 'bankDetails')}
+                    className="form-input"
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <input
+                    name="ifscSwift"
+                    placeholder="IFSC / SWIFT Code"
+                    value={invoice.bankDetails.ifscSwift}
+                    onChange={e => handleChange(e, 'bankDetails')}
+                    className="form-input"
+                  />
+                </div>
               </div>
             </div>
 
