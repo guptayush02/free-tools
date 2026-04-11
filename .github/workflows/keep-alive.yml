@@ -1,0 +1,18 @@
+name: Keep Server Awake
+
+on:
+  schedule:
+    - cron: '*/13 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping-health-endpoint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        env:
+          KEEP_ALIVE_URL: ${{ secrets.KEEP_ALIVE_URL }}
+        run: |
+          TARGET_URL="${KEEP_ALIVE_URL:-https://free-tools-xm13.onrender.com/api/health/ping}"
+          echo "Pinging ${TARGET_URL}"
+          curl --fail --silent --show-error --max-time 20 "$TARGET_URL"
