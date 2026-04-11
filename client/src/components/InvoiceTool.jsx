@@ -20,9 +20,39 @@ const InvoiceTool = () => {
   });
   // Prefill state for repeat invoice
   const [prefill, setPrefill] = useState({ payer: null, payee: null });
+  const [editingInvoiceId, setEditingInvoiceId] = useState(null);
   const [status, setStatus] = useState('');
   const [showPreview, setShowPreview] = useState(false); // ✅ NEW: Preview state
   const [previewInvoice, setPreviewInvoice] = useState(null); // ✅ NEW: Preview data
+  const isEditing = Boolean(editingInvoiceId);
+
+  const fetchNextInvoiceNumber = async () => {
+    try {
+      const res = await fetch('/api/invoices/next-number', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const data = await res.json();
+      if (res.ok && data.invoiceNumber) {
+        return data.invoiceNumber;
+      }
+      return '';
+    } catch {
+      return '';
+    }
+  };
+
+  useEffect(() => {
+    const loadNextInvoiceNumber = async () => {
+      const nextNumber = await fetchNextInvoiceNumber();
+      if (nextNumber) {
+        setInvoice(prev => ({ ...prev, invoiceNumber: nextNumber }));
+      }
+    };
+
+    loadNextInvoiceNumber();
+  }, []);
 
   const handleChange = (e, section = null) => {
     if (section) {
@@ -30,6 +60,42 @@ const InvoiceTool = () => {
     } else {
       setInvoice({ ...invoice, [e.target.name]: e.target.value });
     }
+  };
+
+  const handleEditInvoice = (existingInvoice) => {
+    setInvoice({
+      invoiceNumber: existingInvoice.invoiceNumber || '',
+      payer: {
+        name: existingInvoice.payer?.name || '',
+        address: existingInvoice.payer?.address || '',
+        email: existingInvoice.payer?.email || '',
+        companyId: existingInvoice.payer?.companyId || ''
+      },
+      payee: {
+        name: existingInvoice.payee?.name || '',
+        address: existingInvoice.payee?.address || '',
+        email: existingInvoice.payee?.email || '',
+        companyId: existingInvoice.payee?.companyId || ''
+      },
+      bankDetails: {
+        accountName: existingInvoice.bankDetails?.accountName || '',
+        accountNumber: existingInvoice.bankDetails?.accountNumber || '',
+        bankName: existingInvoice.bankDetails?.bankName || '',
+        bankAddress: existingInvoice.bankDetails?.bankAddress || '',
+        ifscSwift: existingInvoice.bankDetails?.ifscSwift || ''
+      },
+      items: (existingInvoice.items || []).length > 0
+        ? existingInvoice.items
+        : [{ description: '', quantity: 1, price: 0 }],
+      date: existingInvoice.date
+        ? new Date(existingInvoice.date).toISOString().split('T')[0]
+        : new Date().toISOString().split('T')[0],
+      total: existingInvoice.total || 0,
+      currency: existingInvoice.currency || 'USD'
+    });
+    setEditingInvoiceId(existingInvoice._id);
+    setStatus('');
+    setView('create');
   };
 
   // Handle autocomplete selection
@@ -58,22 +124,6 @@ const InvoiceTool = () => {
     setInvoice(updatedInvoice);
   };
 
-  // Reset form
-  const handleReset = () => {
-    setInvoice({
-      invoiceNumber: '',
-      payer: { name: '', address: '', email: '', companyId: '' },
-      payee: { name: '', address: '', email: '', companyId: '' },
-      bankDetails: { accountName: '', accountNumber: '', bankName: '', bankAddress: '', ifscSwift: '' },
-      items: [{ description: '', quantity: 1, price: 0 }],
-      date: new Date().toISOString().split('T')[0],
-      total: 0,
-      currency: 'USD'
-    });
-    setStatus('');
-    setPrefill({ payer: null, payee: null });
-  };
-
   // Prefill for repeat invoice
   const handlePrefill = (type) => {
     if (prefill[type]) {
@@ -84,7 +134,6 @@ const InvoiceTool = () => {
   const handleItemChange = (idx, e) => {
     const value = e.target.value;
     const fieldName = e.target.name;
-    
     const items = invoice.items.map((item, i) => {
       if (i === idx) {
         if (fieldName === 'description') {
@@ -119,8 +168,8 @@ const InvoiceTool = () => {
 
   const getCurrencySymbol = (currency) => {
     const symbols = {
-      'USD': '$', 'EUR': '€', 'GBP': '£', 'INR': '₹', 
-      'JPY': '¥', 'AUD': 'A$', 'CAD': 'C$', 'CHF': 'Fr', 
+      'USD': '$', 'EUR': '€', 'GBP': '£', 'INR': '₹',
+      'JPY': '¥', 'AUD': 'A$', 'CAD': 'C$', 'CHF': 'Fr',
       'CNY': '¥', 'SGD': 'S$'
     };
     return symbols[currency] || '$';
@@ -134,23 +183,50 @@ const InvoiceTool = () => {
     setShowPreview(true);
   };
 
+  const handleReset = async () => {
+    const nextNumber = await fetchNextInvoiceNumber();
+    setInvoice({
+      invoiceNumber: nextNumber,
+      payer: { name: '', address: '', email: '', companyId: '' },
+      payee: { name: '', address: '', email: '', companyId: '' },
+      bankDetails: { accountName: '', accountNumber: '', bankName: '', bankAddress: '', ifscSwift: '' },
+      items: [{ description: '', quantity: 1, price: 0 }],
+      date: new Date().toISOString().split('T')[0],
+      total: 0,
+      currency: 'USD'
+    });
+    setEditingInvoiceId(null);
+    setStatus('');
+    setPrefill({ payer: null, payee: null });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const total = calculateTotal();
     try {
-      const res = await fetch('/api/invoices', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json', 
-          'Authorization': `Bearer ${localStorage.getItem('token')}` 
+      const endpoint = isEditing ? `/api/invoices/${editingInvoiceId}` : '/api/invoices';
+      const method = isEditing ? 'PUT' : 'POST';
+
+      const res = await fetch(endpoint, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({ ...invoice, total })
       });
       const data = await res.json();
       if (res.ok) {
-        setStatus('✅ Invoice saved successfully!');
+        setStatus(isEditing ? '✅ Invoice updated successfully!' : '✅ Invoice saved successfully!');
         setPreviewInvoice(data.invoice); // Show saved invoice in preview
         setShowPreview(true); // Auto-open preview after save
+
+        if (!isEditing) {
+          const nextNumber = await fetchNextInvoiceNumber();
+          if (nextNumber) {
+            setInvoice(prev => ({ ...prev, invoiceNumber: nextNumber }));
+          }
+        }
       } else {
         setStatus(`❌ ${data.error || 'Error saving invoice'}`);
       }
@@ -167,7 +243,7 @@ const InvoiceTool = () => {
             ← Create New Invoice
           </button>
         </div>
-        <InvoiceList />
+        <InvoiceList onEditInvoice={handleEditInvoice} />
       </div>
     );
   }
@@ -176,8 +252,8 @@ const InvoiceTool = () => {
     <div className="invoice-tool">
       <div className="invoice-header">
         <div className="header-content">
-          <h1 className="header-title">📄 Invoice Generator</h1>
-          <p className="header-subtitle">Create professional invoices in seconds</p>
+          <h1 className="header-title">📄 {isEditing ? 'Edit Invoice' : 'Invoice Generator'}</h1>
+          <p className="header-subtitle">{isEditing ? 'Update your invoice details' : 'Create professional invoices in seconds'}</p>
         </div>
         <button className="nav-btn nav-btn-primary" onClick={() => setView('list')}>
           📋 View All Invoices
@@ -447,10 +523,10 @@ const InvoiceTool = () => {
                 className="btn btn--secondary btn--lg" 
                 onClick={handleReset}
               >
-                🔄 Reset Form
+                {isEditing ? '✖ Cancel Edit' : '🔄 Reset Form'}
               </button>
               <button type="submit" className="btn btn--primary btn--lg">
-                💾 Save Invoice
+                {isEditing ? '💾 Update Invoice' : '💾 Save Invoice'}
               </button>
             </div>
           </form>

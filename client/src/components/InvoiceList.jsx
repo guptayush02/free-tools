@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import InvoicePreview from './InvoicePreview';
 import './InvoiceTool.css';
 
-const InvoiceList = () => {
+const InvoiceList = ({ onEditInvoice }) => {
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -61,6 +61,13 @@ const InvoiceList = () => {
                 <span>{inv.payer?.name || '-'}</span>
                 <span className="align-right">{inv.currency || '-'} {inv.total}</span>
                 <span className="actions-cell">
+                  <button
+                    type="button"
+                    className="btn btn--sm btn--secondary"
+                    onClick={() => onEditInvoice?.(inv)}
+                  >
+                    Edit
+                  </button>
                   <button
                     type="button"
                     className="btn btn--sm btn--outline"
