@@ -67,6 +67,56 @@ function App() {
   const [selectedSnippetId, setSelectedSnippetId] = useState(null)
   const [activeTab, setActiveTab] = useState('ats')
   const [serverHealthChecked, setServerHealthChecked] = useState(false);
+  const [status, setStatus] = useState('idle')
+  const [statusMessage, setStatusMessage] = useState('')
+  const [unverifiedEmail, setUnverifiedEmail] = useState('')
+  const [resendLoading, setResendLoading] = useState(false)
+  const [resentSuccess, setResentSuccess] = useState(false)
+
+
+  // Handle ?verified=true / ?verify_token=... redirects from the verification link
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+
+    const verifyToken = params.get('verify_token')
+    if (verifyToken) {
+      // Call the backend verify endpoint
+      axios.get(`/api/auth/verify-email?token=${verifyToken}`)
+        .then(() => {
+          // Server redirects, so this won't normally run — but handle the case
+          // where the server returns JSON instead of redirecting
+          setStatus('verified')
+          setStatusMessage('✅ Email verified! You can now sign in.')
+        })
+        .catch(() => {
+          setStatus('verify_failed')
+          setStatusMessage('❌ Verification link is invalid or has expired.')
+        })
+      window.history.replaceState({}, '', window.location.pathname)
+      return
+    }
+
+    const verified = params.get('verified')
+    if (verified === 'true') {
+      setStatus('verified')
+      setStatusMessage('✅ Email verified! You can now sign in.')
+      setIsLogin(true)
+      window.history.replaceState({}, '', window.location.pathname)
+      return
+    }
+    if (verified === 'false') {
+      const reason = params.get('reason') || 'unknown'
+      const messages = {
+        invalid_token: '❌ Verification link is invalid.',
+        expired_token: '❌ Verification link has expired. Please request a new one.',
+        missing_token: '❌ No verification token found in the link.',
+        server_error: '❌ A server error occurred during verification. Please try again.',
+      }
+      setStatus('verify_failed')
+      setStatusMessage(messages[reason] || '❌ Email verification failed.')
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, [])
 
   useEffect(() => {
     // Waking up server
@@ -168,6 +218,11 @@ function App() {
           </div>
         )
       }
+      {statusMessage && (
+        <div className={`status-message ${status === 'verified' ? 'success' : 'error'}`}>
+          {statusMessage}
+        </div>
+      )}
       <header className="header">
         <div className="brand">
           <img src="assets/images/logo.jpeg" alt="Free Tools Logo" style={{height: 40, width: 40}} />

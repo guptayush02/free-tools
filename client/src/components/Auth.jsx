@@ -19,25 +19,13 @@ export default function Auth({ onAuthSuccess }) {
     confirmPassword: '',
   })
 
-  // Handle ?verified=true / ?verify_token=... redirects from the verification link
+  // Auto-trigger verification API when verify_token exists in URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-
     const verifyToken = params.get('verify_token')
+
     if (verifyToken) {
-      // Call the backend verify endpoint
-      axios.get(`/api/auth/verify-email?token=${verifyToken}`)
-        .then(() => {
-          // Server redirects, so this won't normally run — but handle the case
-          // where the server returns JSON instead of redirecting
-          setStatus('verified')
-          setStatusMessage('✅ Email verified! You can now sign in.')
-        })
-        .catch(() => {
-          setStatus('verify_failed')
-          setStatusMessage('❌ Verification link is invalid or has expired.')
-        })
-      window.history.replaceState({}, '', window.location.pathname)
+      window.location.replace(`/api/auth/verify-email?token=${encodeURIComponent(verifyToken)}`)
       return
     }
 
@@ -49,6 +37,7 @@ export default function Auth({ onAuthSuccess }) {
       window.history.replaceState({}, '', window.location.pathname)
       return
     }
+
     if (verified === 'false') {
       const reason = params.get('reason') || 'unknown'
       const messages = {

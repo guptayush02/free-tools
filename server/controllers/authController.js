@@ -128,20 +128,27 @@ exports.login = async (req, res) => {
 // Verify email via token
 exports.verifyEmail = async (req, res) => {
   try {
-    const { token } = req.query;
+    const tokenParam = req.query.token;
+    const token = Array.isArray(tokenParam)
+      ? tokenParam[0]
+      : typeof tokenParam === 'string'
+        ? tokenParam
+        : '';
+
+    const normalizedToken = token.trim();
     const clientUrl = (process.env.CLIENT_URL || 'http://localhost:3000').replace(/\/$/, '');
 
-    if (!token) {
+    if (!normalizedToken) {
       return res.redirect(`${clientUrl}?verified=false&reason=missing_token`);
     }
 
-    const user = await User.findOne({ emailVerificationToken: token });
+    const user = await User.findOne({ emailVerificationToken: normalizedToken });
 
     if (!user) {
       return res.redirect(`${clientUrl}?verified=false&reason=invalid_token`);
     }
 
-    if (user.emailVerificationExpires < new Date()) {
+    if (!user.emailVerificationExpires || user.emailVerificationExpires < new Date()) {
       return res.redirect(`${clientUrl}?verified=false&reason=expired_token`);
     }
 
@@ -150,11 +157,12 @@ exports.verifyEmail = async (req, res) => {
     user.emailVerificationExpires = null;
     await user.save();
 
-    return res.redirect(`${clientUrl}?verified=true`);
+    // return res.redirect(`${clientUrl}?verified=true`);
+    return res.json({ message: 'Email verified successfully! You can now sign in.' });
   } catch (error) {
     console.error('Email verification error:', error);
     const clientUrl = (process.env.CLIENT_URL || 'http://localhost:3000').replace(/\/$/, '');
-    return res.redirect(`${clientUrl}?verified=false&reason=server_error`);
+    return res.status(500).json({ error: 'Email verification failed' });
   }
 };
 
