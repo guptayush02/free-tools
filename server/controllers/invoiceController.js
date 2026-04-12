@@ -1,4 +1,5 @@
 const Invoice = require('../models/Invoice');
+const { sendInvoiceEmail } = require('../utils/emailService');
 
 const computeNextInvoiceNumber = (lastInvoiceNumber) => {
   const fallback = 'INV-1';
@@ -87,6 +88,60 @@ exports.getUserInvoices = async (req, res) => {
   }
 };
 
+// Send invoice as email
+exports.sendInvoiceEmail = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+    const { pdfBase64, invoiceMonth, invoiceYear } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    const invoice = await Invoice.findOne({ _id: id, userId });
+    if (!invoice) {
+      return res.status(404).json({ error: 'Invoice not found' });
+    }
+
+    const fromEmail = invoice.payee?.email;
+    const fromName  = invoice.payee?.name || 'Invoice Sender';
+    const toEmail   = invoice.payer?.email;
+    const toName    = invoice.payer?.name || 'Client';
+
+    if (!toEmail) {
+      return res.status(400).json({ error: 'Payer email is not set on this invoice.' });
+    }
+    if (!invoiceMonth || !String(invoiceYear || '').trim()) {
+      return res.status(400).json({ error: 'Invoice month and year are required.' });
+    }
+
+    const monthYear = `${invoiceMonth}-${String(invoiceYear).trim()}`;
+    const subject = `Invoice ${monthYear}`;
+
+    // const body = `Dear ${toName},\n\nPlease find the attached invoice for ${monthYear}.\n\nInvoice Number: ${invoice.invoiceNumber || ''}\nAmount Due: ${invoice.currency || ''} ${invoice.total}\n\nKindly review and process the payment at your earliest convenience.\n\nThis is an auto generated email.\n\nBest regards,\n${fromName}`;
+    const body = `Hello ${toName},\n\nI've attached your ${monthYear} invoice.\n\nInvoice #: ${invoice.invoiceNumber || 'N/A'}\n\nPlease take a look when you have a moment and let me know if you need anything.\n\n(This is an auto-generated email)\n\nReply directly to this email - I'll get back to you within 24 hours.\n\nBest,\n${fromName}`;
+
+    const filename = `Invoice_${(invoice.invoiceNumber || invoice._id).toString().replace(/\s+/g, '_')}_${monthYear.replace(/\s+/g, '_')}.pdf`;
+
+    await sendInvoiceEmail({
+      fromEmail,
+      fromName,
+      toEmail,
+      toName,
+      subject,
+      body,
+      pdfBase64,
+      filename,
+    });
+
+    res.status(200).json({ message: `Invoice emailed successfully to ${toEmail}` });
+  } catch (err) {
+    console.error('Error sending invoice email:', err);
+    res.status(500).json({ error: err.message || 'Failed to send invoice email' });
+  }
+};
+
 // Get next invoice number for logged-in user
 exports.getNextInvoiceNumber = async (req, res) => {
   try {
@@ -106,3 +161,4 @@ exports.getNextInvoiceNumber = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
+

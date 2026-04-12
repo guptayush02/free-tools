@@ -1,8 +1,28 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import jsPDF from 'jspdf';
 import './InvoicePreview.css';
 
 const InvoicePreview = ({ invoice, onClose, showCloseButton = true }) => {
+  const [emailStatus, setEmailStatus] = useState(''); // '', 'sending', 'sent', 'error'
+  const defaultInvoiceDate = useMemo(() => (invoice.date ? new Date(invoice.date) : new Date()), [invoice.date]);
+  const [invoiceEmailMonth, setInvoiceEmailMonth] = useState(
+    defaultInvoiceDate.toLocaleString('en-US', { month: 'long' })
+  );
+  const [invoiceEmailYear, setInvoiceEmailYear] = useState(String(defaultInvoiceDate.getFullYear()));
+  const monthOptions = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ];
   const buildInvoicePdf = (invoice) => {
     const doc = new jsPDF('p', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -264,6 +284,56 @@ const InvoicePreview = ({ invoice, onClose, showCloseButton = true }) => {
     }
   };
 
+  const handleSendEmail = async () => {
+    if (!invoice._id) {
+      setEmailStatus('error');
+      alert('Please save the invoice before sending by email.');
+      return;
+    }
+    if (!invoice.payer?.email) {
+      setEmailStatus('error');
+      alert('Payer email is missing. Please add payer email before sending.');
+      return;
+    }
+    if (!invoiceEmailMonth || !invoiceEmailYear.trim()) {
+      setEmailStatus('error');
+      alert('Please enter invoice month and year before sending.');
+      return;
+    }
+
+    setEmailStatus('sending');
+    try {
+      const doc = buildInvoicePdf(invoice);
+      // output as base64 (strip the data URI prefix)
+      const pdfBase64 = doc.output('datauristring').split(',')[1];
+
+      const res = await fetch(`/api/invoices/${invoice._id}/send-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          pdfBase64,
+          invoiceMonth: invoiceEmailMonth,
+          invoiceYear: invoiceEmailYear.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setEmailStatus('sent');
+      } else {
+        setEmailStatus('error');
+        alert(`Failed to send email: ${data.error}`);
+      }
+    } catch (e) {
+      console.error('Send email error:', e);
+      setEmailStatus('error');
+      alert('Network error. Could not send email.');
+    }
+  };
+
   const getPdfDataUri = () => {
     try {
       const doc = buildInvoicePdf(invoice);
@@ -312,6 +382,34 @@ const InvoicePreview = ({ invoice, onClose, showCloseButton = true }) => {
         </div>
 
         <div className="invoice-preview-footer">
+          <div className="form-row" style={{ marginBottom: '12px' }}>
+            <div className="form-group">
+              <label className="form-label">Invoice Month</label>
+              <select
+                value={invoiceEmailMonth}
+                onChange={(e) => setInvoiceEmailMonth(e.target.value)}
+                className="form-input"
+              >
+                {monthOptions.map((month) => (
+                  <option key={month} value={month}>
+                    {month}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Invoice Year</label>
+              <input
+                type="number"
+                min="2000"
+                max="9999"
+                value={invoiceEmailYear}
+                onChange={(e) => setInvoiceEmailYear(e.target.value)}
+                className="form-input"
+                placeholder="2026"
+              />
+            </div>
+          </div>
           <div className="invoice-preview-actions">
             <button
               type="button"
@@ -319,6 +417,27 @@ const InvoicePreview = ({ invoice, onClose, showCloseButton = true }) => {
               onClick={onClose}
             >
               Cancel
+            </button>
+            <button
+              type="button"
+              className="btn btn--outline"
+              onClick={handleSendEmail}
+              disabled={emailStatus === 'sending'}
+              title={`Send invoice to ${invoice.payer?.email || 'payer email'}`}
+            >
+              {emailStatus === 'sending' ? (
+                '⏳ Sending...'
+              ) : emailStatus === 'sent' ? (
+                '✅ Email Sent!'
+              ) : (
+                <>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="22" y1="2" x2="11" y2="13" />
+                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                  </svg>
+                  Send Email
+                </>
+              )}
             </button>
             <button
               type="button"
@@ -333,6 +452,11 @@ const InvoicePreview = ({ invoice, onClose, showCloseButton = true }) => {
               Download PDF
             </button>
           </div>
+          {emailStatus === 'sent' && (
+            <p style={{ textAlign: 'center', color: '#16a34a', marginTop: '8px', fontSize: '0.85rem' }}>
+              Invoice emailed to <strong>{invoice.payer?.email}</strong>
+            </p>
+          )}
         </div>
       </div>
     </div>
