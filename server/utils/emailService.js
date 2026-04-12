@@ -1,10 +1,10 @@
 const nodemailer = require('nodemailer');
 
-const createTransporter = () => {
+const createTransporter = (overrides = {}) => {
   const emailUser = (process.env.EMAIL_USER || '').trim();
   const emailPass = (process.env.EMAIL_PASS || '').trim();
 
-  return nodemailer.createTransport({
+  const baseConfig = {
     host: process.env.EMAIL_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.EMAIL_PORT || '465', 10),
     secure: process.env.EMAIL_SECURE !== 'false', // true for 465, false for 587
@@ -12,7 +12,46 @@ const createTransporter = () => {
       user: emailUser,
       pass: emailPass,
     },
-  });
+    connectionTimeout: parseInt(process.env.EMAIL_CONNECTION_TIMEOUT || '15000', 10),
+    greetingTimeout: parseInt(process.env.EMAIL_GREETING_TIMEOUT || '15000', 10),
+    socketTimeout: parseInt(process.env.EMAIL_SOCKET_TIMEOUT || '30000', 10),
+  };
+
+  return nodemailer.createTransport({ ...baseConfig, ...overrides });
+};
+
+const shouldRetryWithFallback = (error) => {
+  const code = error?.code || '';
+  const command = error?.command || '';
+  return code === 'ETIMEDOUT' || code === 'ECONNECTION' || command === 'CONN';
+};
+
+const sendMailWithFallback = async (mailOptions) => {
+  const primary = createTransporter();
+
+  try {
+    return await primary.sendMail(mailOptions);
+  } catch (error) {
+    const host = (process.env.EMAIL_HOST || 'smtp.gmail.com').toLowerCase();
+    const configuredPort = parseInt(process.env.EMAIL_PORT || '465', 10);
+
+    // Render/Gmail can intermittently timeout on 465 SSL handshake.
+    // Retry once using 587 + STARTTLS when using Gmail.
+    const canUseGmailFallback = host.includes('gmail') && configuredPort === 465;
+
+    if (!canUseGmailFallback || !shouldRetryWithFallback(error)) {
+      throw error;
+    }
+
+    const fallback = createTransporter({
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      tls: { servername: 'smtp.gmail.com' },
+    });
+
+    return fallback.sendMail(mailOptions);
+  }
 };
 
 /**
@@ -35,8 +74,6 @@ const sendInvoiceEmail = async ({ fromEmail, fromName, toEmail, toName, subject,
     throw new Error('Email credentials are not configured. Set EMAIL_USER and EMAIL_PASS in your .env file.');
   }
 
-  const transporter = createTransporter();
-
   const mailOptions = {
     from: `"${fromName}" <${emailUser}>`,
     replyTo: fromEmail,
@@ -55,7 +92,7 @@ const sendInvoiceEmail = async ({ fromEmail, fromName, toEmail, toName, subject,
     ],
   };
 
-  const info = await transporter.sendMail(mailOptions);
+  const info = await sendMailWithFallback(mailOptions);
   return info;
 };
 
@@ -74,8 +111,6 @@ const sendVerificationEmail = async ({ toEmail, toName, verifyUrl }) => {
     throw new Error('Email credentials are not configured. Set EMAIL_USER and EMAIL_PASS in your .env file.');
   }
 
-  const transporter = createTransporter();
-
   const mailOptions = {
     from: `"Free Tools" <${emailUser}>`,
     to: `"${toName}" <${toEmail}>`,
@@ -92,7 +127,7 @@ const sendVerificationEmail = async ({ toEmail, toName, verifyUrl }) => {
       </div>`,
   };
 
-  const info = await transporter.sendMail(mailOptions);
+  const info = await sendMailWithFallback(mailOptions);
   return info;
 };
 
