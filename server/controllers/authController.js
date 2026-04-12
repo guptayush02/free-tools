@@ -62,12 +62,12 @@ exports.signup = async (req, res) => {
       // Don't block signup if email fails — user can resend later
     }
 
-    res.status(201).json({
+    return res.status(201).json({
       message: 'Account created! Please check your email and verify your address before signing in.',
     });
   } catch (error) {
     console.error('Signup error:', error);
-    res.status(500).json({ error: 'Signup failed' });
+    return res.status(500).json({ error: 'Signup failed' });
   }
 };
 
@@ -107,7 +107,7 @@ exports.login = async (req, res) => {
     // Generate token
     const token = generateToken(user._id);
 
-    res.json({
+    return res.json({
       message: 'Login successful',
       token,
       user: {
@@ -121,7 +121,7 @@ exports.login = async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ error: 'Login failed' });
+    return res.status(500).json({ error: 'Login failed' });
   }
 };
 
@@ -188,10 +188,10 @@ exports.resendVerification = async (req, res) => {
 
     await sendVerificationEmail({ toEmail: user.email, toName: user.username, verifyUrl });
 
-    res.json({ message: 'Verification email resent. Please check your inbox.' });
+    return res.json({ message: 'Verification email resent. Please check your inbox.' });
   } catch (error) {
     console.error('Resend verification error:', error);
-    res.status(500).json({ error: 'Failed to resend verification email' });
+    return res.status(500).json({ error: 'Failed to resend verification email' });
   }
 };
 
@@ -206,10 +206,10 @@ exports.getProfile = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.json(user);
+    return res.json(user);
   } catch (error) {
     console.error('Profile error:', error);
-    res.status(500).json({ error: 'Failed to fetch profile' });
+    return res.status(500).json({ error: 'Failed to fetch profile' });
   }
 };
 
@@ -225,9 +225,9 @@ exports.updateProfile = async (req, res) => {
       { new: true }
     ).select('-password');
 
-    res.json(user);
+    return res.json(user);
   } catch (error) {
     console.error('Update profile error:', error);
-    res.status(500).json({ error: 'Failed to update profile' });
+    return res.status(500).json({ error: 'Failed to update profile' });
   }
 };
