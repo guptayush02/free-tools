@@ -59,4 +59,41 @@ const sendInvoiceEmail = async ({ fromEmail, fromName, toEmail, toName, subject,
   return info;
 };
 
-module.exports = { sendInvoiceEmail };
+/**
+ * Send email verification link to a newly registered user.
+ * @param {object} opts
+ * @param {string} opts.toEmail   - User's email address
+ * @param {string} opts.toName    - User's display name / username
+ * @param {string} opts.verifyUrl - Full URL containing the verification token
+ */
+const sendVerificationEmail = async ({ toEmail, toName, verifyUrl }) => {
+  const emailUser = (process.env.EMAIL_USER || '').trim();
+  const emailPass = (process.env.EMAIL_PASS || '').trim();
+
+  if (!emailUser || !emailPass) {
+    throw new Error('Email credentials are not configured. Set EMAIL_USER and EMAIL_PASS in your .env file.');
+  }
+
+  const transporter = createTransporter();
+
+  const mailOptions = {
+    from: `"Free Tools" <${emailUser}>`,
+    to: `"${toName}" <${toEmail}>`,
+    subject: 'Verify your Free Tools account',
+    text: `Hi ${toName},\n\nThank you for signing up!\n\nPlease verify your email address by clicking the link below:\n${verifyUrl}\n\nThis link expires in 24 hours.\n\nIf you did not create an account, you can safely ignore this email.\n\n— Free Tools Team`,
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;padding:32px 24px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">
+        <h2 style="margin-top:0;color:#1f2937;">Verify your email address</h2>
+        <p style="color:#4b5563;">Hi <strong>${toName}</strong>,</p>
+        <p style="color:#4b5563;">Thanks for creating a Free Tools account! Click the button below to confirm your email address and activate your account.</p>
+        <a href="${verifyUrl}" style="display:inline-block;margin:20px 0;padding:12px 28px;background:#4f46e5;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;font-size:15px;">Verify Email</a>
+        <p style="color:#6b7280;font-size:13px;">Or copy and paste this link into your browser:<br><a href="${verifyUrl}" style="color:#4f46e5;word-break:break-all;">${verifyUrl}</a></p>
+        <p style="color:#9ca3af;font-size:12px;margin-bottom:0;">This link expires in 24 hours. If you didn't sign up, you can safely ignore this email.</p>
+      </div>`,
+  };
+
+  const info = await transporter.sendMail(mailOptions);
+  return info;
+};
+
+module.exports = { sendInvoiceEmail, sendVerificationEmail };
